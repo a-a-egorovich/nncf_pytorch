@@ -67,6 +67,20 @@ class NNCFLinear(_NNCFModuleMixin, nn.Linear):
         return nncf_linear
 
 
+class NNCFConvTranspose1d(_NNCFModuleMixin, nn.ConvTranspose1d):
+    @staticmethod
+    def from_module(module):
+        assert module.__class__.__name__ == nn.ConvTranspose1d.__name__
+        args = [module.in_channels, module.out_channels, module.kernel_size, module.stride,
+                module.padding, module.output_padding, module.groups, hasattr(module, 'bias'),
+                module.dilation]
+        if hasattr(module, 'padding_mode'):
+            args.append(module.padding_mode)
+        nncf_conv_transpose1d = NNCFConvTranspose1d(*args)
+        dict_update(nncf_conv_transpose1d.__dict__, module.__dict__)
+        return nncf_conv_transpose1d
+
+
 class NNCFConvTranspose2d(_NNCFModuleMixin, nn.ConvTranspose2d):
     @staticmethod
     def from_module(module):
@@ -127,6 +141,7 @@ NNCF_MODULES_DICT = {
     NNCFConv2d: nn.Conv2d,
     NNCFConv3d: nn.Conv3d,
     NNCFLinear: nn.Linear,
+    NNCFConvTranspose1d: nn.ConvTranspose1d,
     NNCFConvTranspose2d: nn.ConvTranspose2d,
     NNCFConvTranspose3d: nn.ConvTranspose3d,
     NNCFEmbedding: nn.Embedding
@@ -142,6 +157,7 @@ NNCF_CONV_MODULES_DICT = {
     NNCFConv3d: nn.Conv3d,
 }
 NNCF_DECONV_MODULES_DICT = {
+    NNCFConvTranspose1d: nn.ConvTranspose1d,
     NNCFConvTranspose2d: nn.ConvTranspose2d,
     NNCFConvTranspose3d: nn.ConvTranspose3d,
 }
